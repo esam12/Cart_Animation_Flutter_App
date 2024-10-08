@@ -1,6 +1,9 @@
 import 'package:cart_animation/constants.dart';
 import 'package:cart_animation/models/product.dart';
 import 'package:cart_animation/screens/controllers/home_controller.dart';
+import 'package:cart_animation/screens/deatils/details_screen.dart';
+import 'package:cart_animation/screens/home/components/cart_details_view.dart';
+import 'package:cart_animation/screens/home/components/cart_short_view.dart';
 import 'package:flutter/material.dart';
 
 import 'components/header.dart';
@@ -14,7 +17,7 @@ class HomeScreen extends StatelessWidget {
     final controller = HomeController();
 
     void _onVerticalGesture(DragUpdateDetails details) {
-      if (details.primaryDelta! < -7) {
+      if (details.primaryDelta! < -0.7) {
         controller.changeHomeState(HomeState.cart);
       } else if (details.primaryDelta! > 12) {
         controller.changeHomeState(HomeState.normal);
@@ -54,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: GridView.builder(
-                            itemCount: demo_products.length,
+                            itemCount: demoProducts.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
@@ -63,23 +66,56 @@ class HomeScreen extends StatelessWidget {
                               crossAxisSpacing: defaultPadding,
                             ),
                             itemBuilder: (context, index) => ProductCard(
-                              product: demo_products[index],
-                              press: () {},
+                              product: demoProducts[index],
+                              press: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                      transitionDuration:
+                                          const Duration(milliseconds: 500),
+                                      reverseTransitionDuration:
+                                          const Duration(milliseconds: 500),
+                                      pageBuilder: (context, animation,
+                                          secodaryAnimation) {
+                                        return FadeTransition(
+                                          opacity: animation,
+                                          child: DetailsScreen(
+                                            product: demoProducts[index],
+                                            onProductAdd: () {
+                                              controller.addProductToCart(
+                                                  demoProducts[index]);
+                                            },
+                                          ),
+                                        );
+                                      }),
+                                );
+                              },
                             ),
                           ),
                         ),
                       ),
                       // Card Panel
-                      Positioned(
+                      AnimatedPositioned(
+                        duration: panelTransition,
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: cartBarHeight,
+                        height: controller.homeState == HomeState.normal
+                            ? cartBarHeight
+                            : (constraints.maxHeight - cartBarHeight),
                         child: GestureDetector(
                           onVerticalDragUpdate: _onVerticalGesture,
                           child: Container(
-                              // color: Colors.red,
-                              ),
+                            padding: const EdgeInsets.all(defaultPadding),
+                            color: const Color(0xFFEAEAEA),
+                            alignment: Alignment.topLeft,
+                            child: AnimatedSwitcher(
+                              duration: panelTransition,
+                              child: controller.homeState == HomeState.normal
+                                  ? CardShortView(controller: controller)
+                                  : CartDetailsView(controller: controller),
+                            ),
+                          ),
                         ),
                       ),
                       // Header
