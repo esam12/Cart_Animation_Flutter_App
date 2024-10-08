@@ -1,4 +1,4 @@
-import 'product.dart';
+import 'package:cart_animation/models/product.dart';
 
 class ProductItem {
   int quantity;

@@ -1,4 +1,3 @@
-
 import 'package:cart_animation/components/fav_btn.dart';
 import 'package:cart_animation/components/price.dart';
 import 'package:cart_animation/constants.dart';
@@ -8,18 +7,41 @@ import 'package:flutter/material.dart';
 import 'components/cart_counter.dart';
 
 class DetailsScreen extends StatefulWidget {
-  const DetailsScreen({Key? key, required this.product}) : super(key: key);
+  const DetailsScreen(
+      {super.key, required this.product, required this.onProductAdd});
 
   final Product product;
+  final VoidCallback onProductAdd;
 
   @override
   _DetailsScreenState createState() => _DetailsScreenState();
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
+  String _cartTag = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: SafeArea(
+          child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5),
+          child: ElevatedButton(
+            onPressed: () {
+              widget.onProductAdd();
+              setState(() {
+                _cartTag = "_cartTag";
+              });
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'Add to Cart',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      )),
       backgroundColor: Colors.white,
       appBar: buildAppBar(),
       body: Column(
@@ -33,7 +55,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 Container(
                   width: double.infinity,
                   color: const Color(0xFFF8F8F8),
-                  child: Image.asset(widget.product.image!),
+                  child: Hero(
+                      tag: widget.product.title! + _cartTag,
+                      child: Image.asset(widget.product.image!)),
                 ),
                 const Positioned(
                   bottom: -20,
@@ -56,7 +80,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         .copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                const Price(amount: "20.00"),
+                const Price(amount: "25.0"),
               ],
             ),
           ),

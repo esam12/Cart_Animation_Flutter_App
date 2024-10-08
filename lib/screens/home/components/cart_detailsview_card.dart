@@ -1,5 +1,5 @@
 import 'package:cart_animation/components/price.dart';
-import 'package:cart_animation/models/ProductItem.dart';
+import 'package:cart_animation/models/productItem.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants.dart';
